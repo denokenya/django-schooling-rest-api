@@ -16,17 +16,25 @@ Including another URLconf
 from schooling.models import Matriculation
 from django.contrib import admin
 from django.urls import path, include
-from schooling.views import MatriculationsViewSet, StudentsViewSet, CoursesViewSet, MatriculationListStudentCourses
+from schooling.views import (
+    MatriculationsViewSet,
+    StudentsViewSet,
+    CoursesViewSet,
+    MatriculationListStudentCourses,
+    MatriculationListStudentsByCourse,
+)
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register('students', StudentsViewSet, basename='Students')
-router.register('courses', CoursesViewSet, basename='Courses')
-router.register('matriculations', MatriculationsViewSet, Matriculation)
+router.register("students", StudentsViewSet, basename="Students")
+router.register("courses", CoursesViewSet, basename="Courses")
+router.register("matriculations", MatriculationsViewSet, Matriculation)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include(router.urls)),
-    path('students/<int:pk>/matriculations',
-         MatriculationListStudentCourses.as_view())
+    path("admin/", admin.site.urls),
+    path("", include(router.urls)),
+    path("students/<int:pk>/matriculations", MatriculationListStudentCourses.as_view()),
+    path(
+        "courses/<int:pk>/matriculations", MatriculationListStudentsByCourse.as_view()
+    ),
 ]
