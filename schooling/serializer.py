@@ -38,3 +38,9 @@ class MatriculationStudentsByCourseSerialiazer(serializers.ModelSerializer):
     class Meta:
         model = Matriculation
         fields = ["student_name"]
+
+
+class StudentSerializerV2(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ["id", "name", "phone_number"]

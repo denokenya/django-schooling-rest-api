@@ -1,4 +1,4 @@
-from rest_framework import viewsets, generics
+from rest_framework import status, viewsets, generics
 from schooling.models import Matriculation, Student, Course
 from schooling.serializer import (
     MatriculationStudentsByCourseSerialiazer,
@@ -6,18 +6,21 @@ from schooling.serializer import (
     StudentSerializer,
     CourseSerializer,
     MatriculationStudentCoursesSerialiazer,
+    StudentSerializerV2,
 )
-from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 
 class StudentsViewSet(viewsets.ModelViewSet):
     """It shows all the students"""
 
     queryset = Student.objects.all()
-    serializer_class = StudentSerializer
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.version == "v2":
+            return StudentSerializerV2
+        else:
+            return StudentSerializer
 
 
 class CoursesViewSet(viewsets.ModelViewSet):
@@ -25,8 +28,15 @@ class CoursesViewSet(viewsets.ModelViewSet):
 
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = Response(serializer.data, status=status.HTTP_201_CREATED)
+            id = str(serializer.data["id"])
+            response["Location"] = request.build_absolute_uri() + id
+            return response
 
 
 class MatriculationsViewSet(viewsets.ModelViewSet):
@@ -34,8 +44,7 @@ class MatriculationsViewSet(viewsets.ModelViewSet):
 
     queryset = Matriculation.objects.all()
     serializer_class = MatriculationSerializer
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+    http_method_names = ["get", "post", "put", "path"]
 
 
 class MatriculationListStudentCourses(generics.ListAPIView):
@@ -46,8 +55,6 @@ class MatriculationListStudentCourses(generics.ListAPIView):
         return queryset
 
     serializer_class = MatriculationStudentCoursesSerialiazer
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
 
 
 class MatriculationListStudentsByCourse(generics.ListAPIView):
@@ -58,5 +65,3 @@ class MatriculationListStudentsByCourse(generics.ListAPIView):
         return queryset
 
     serializer_class = MatriculationStudentsByCourseSerialiazer
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
