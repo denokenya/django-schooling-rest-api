@@ -9,6 +9,8 @@ from schooling.serializer import (
     StudentSerializerV2,
 )
 from rest_framework.response import Response
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 
 class StudentsViewSet(viewsets.ModelViewSet):
@@ -45,6 +47,10 @@ class MatriculationsViewSet(viewsets.ModelViewSet):
     queryset = Matriculation.objects.all()
     serializer_class = MatriculationSerializer
     http_method_names = ["get", "post", "put", "path"]
+
+    @method_decorator(cache_page(20))
+    def dispatch(self, *args, **kwargs):
+        return super(MatriculationsViewSet, self).dispatch(*args, **kwargs)
 
 
 class MatriculationListStudentCourses(generics.ListAPIView):

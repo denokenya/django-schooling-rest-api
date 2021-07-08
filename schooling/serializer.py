@@ -43,4 +43,4 @@ class MatriculationStudentsByCourseSerialiazer(serializers.ModelSerializer):
 class StudentSerializerV2(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ["id", "name", "phone_number"]
+        fields = ["id", "name", "phone_number", "photo"]
