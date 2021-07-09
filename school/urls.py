@@ -34,7 +34,8 @@ router.register("courses", CoursesViewSet, basename="Courses")
 router.register("matriculations", MatriculationsViewSet, basename="Matriculations")
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("admin/", include("admin_honeypot.urls", namespace="admin_honeypot")),
+    path("geral-control/", admin.site.urls),
     path("", include(router.urls)),
     path("students/<int:pk>/matriculations", MatriculationListStudentCourses.as_view()),
     path(
