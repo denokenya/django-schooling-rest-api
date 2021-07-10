@@ -26,6 +26,22 @@ from schooling.views import (
 from rest_framework import routers
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="School API",
+        default_version="v1",
+        description="It has a base model of student, course and matriculations",
+        terms_of_service="#",
+        contact=openapi.Contact(email="lucasciccomy@gmail.com"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=[permissions.AllowAny],
+)
 
 router = routers.DefaultRouter()
 router.register("students", StudentsViewSet, basename="Students")
@@ -39,5 +55,10 @@ urlpatterns = [
     path("students/<int:pk>/matriculations", MatriculationListStudentCourses.as_view()),
     path(
         "courses/<int:pk>/matriculations", MatriculationListStudentsByCourse.as_view()
+    ),
+    path(
+        "swagger/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

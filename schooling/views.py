@@ -11,6 +11,8 @@ from schooling.serializer import (
 from rest_framework.response import Response
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 class StudentsViewSet(viewsets.ModelViewSet):
@@ -47,6 +49,8 @@ class MatriculationsViewSet(viewsets.ModelViewSet):
 
     queryset = Matriculation.objects.all()
     serializer_class = MatriculationSerializer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "put", "path"]
 
     @method_decorator(cache_page(20))
@@ -57,18 +61,22 @@ class MatriculationsViewSet(viewsets.ModelViewSet):
 class MatriculationListStudentCourses(generics.ListAPIView):
     """It shows all courses that student is matriculated in"""
 
+    serializer_class = MatriculationStudentCoursesSerialiazer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get_queryset(self):
         queryset = Matriculation.objects.filter(student_id=self.kwargs["pk"])
         return queryset
-
-    serializer_class = MatriculationStudentCoursesSerialiazer
 
 
 class MatriculationListStudentsByCourse(generics.ListAPIView):
     """"It shows all the students matriculated in that course"""
 
+    serializer_class = MatriculationStudentsByCourseSerialiazer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get_queryset(self):
         queryset = Matriculation.objects.filter(course_id=self.kwargs["pk"])
         return queryset
-
-    serializer_class = MatriculationStudentsByCourseSerialiazer

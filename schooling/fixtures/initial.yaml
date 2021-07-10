@@ -1,0 +1,14 @@
+- model: schooling.course
+  pk: 1
+  fields:
+    level: B
+    course_code: Mathematics
+    description:
+      Learn basic concepts about mathematics, for example, operations.
+- model: schooling.course
+  pk: 2
+  fields:
+    level: A
+    course_code: English
+    description:
+      Learn advanced concepts, grammar rules, and improve speaking skills in English.
